@@ -1,4 +1,5 @@
 //Extracting the Data By Years
+
 const getDataForYear = (events, year) => {
     let eventsByYear = events.filter((element) => {
         if (parseInt(element['Year']) >= year && element['Medal'] !== 'NA') {
@@ -16,20 +17,29 @@ const getDataForEvent = (events, GamesType) => {
     });
     return eventsByGames;
 }
+//Extraction Data by Team
+const getDataForTeam = (events, Team) => {
+    let eventsByTeam = events.filter((element) => {
+        if (element['Team'] === Team) {
+            return element;
+        }
+    });
+    return eventsByTeam;
+}
 // Number of times olympics hosted per City over the years - Pie chart
 
-export const noOfTimesHostedCity = (events) => {
-    let result = events.reduce((result, event) => {
-        if (result.hasOwnProperty(event['City'])) {
-            if (!result[event['City']].includes(event['Games'])) {
-                result[event['City']].push(event['Games']);
+export const noOfTimesHostedCity = (data) => {
+    let result = data.reduce((res, event) => {
+        if (res.hasOwnProperty(event['City'])) {
+            if (!res[event['City']].includes(event['Games'])) {
+                res[event['City']].push(event['Games']);
             }
         }
         else {
-            result[event['City']] = [];
-            result[event['City']].push(event['Games']);
+            res[event['City']] = [];
+            res[event['City']].push(event['Games']);
         }
-        return result;
+        return res;
     }, {});
     for (let event in result) {
         result[event] = result[event].length;
@@ -57,8 +67,8 @@ export const medalWonPerCountry = (events, year) => {
             result[element['NOC']][element['Medal']] = 1;
             result[element['NOC']]['Total'] = 1;
         }
-
-    });
+        return result;
+    }, {});
     var arr = Object
         .keys(result)
         .sort((a, b) => { return result[b]["Total"] - result[a]["Total"]; })
@@ -70,20 +80,41 @@ export const medalWonPerCountry = (events, year) => {
         });
     return arr;
 }
-//M/F participation by decade - column chart
 
+//M/F participation by decade - column chart
+export const participationByGender = (events) => { }
 //Per year average age of athletes who participated in Boxing Men’s Heavyweight - Line
 export const averageAgeBuilder = (events, GamesType) => {
     let eventsByGames = getDataForEvent(events, GamesType);
-    eventsByGames.reduce((result, element) => {
+    let result = eventsByGames.reduce((result, element) => {
         if (result.hasOwnProperty(element['Year']) && element['Age'] !== 'NA') {
-            result['Year']['Age'] += parseInt(element['Age']);
-            result['Count']++;
+            result [element['Year']]['Age'] += parseInt(element['Age']);
+            result[element['Year']]['Count']++;
+            result[element['Year']]['Average'] = (result[element['Year']]['Age'] / result[element['Year']]['Count']).toFixed(2);
         }
         else if (!result.hasOwnProperty(element['Year']) && element['Age'] !== 'NA') {
-result[element['Year']]={'Age':element['Age'],'Count':1,}
+            result[element['Year']] = { 'Age': parseInt(element['Age']), 'Count': 1 }
+            result[element['Year']]['Average'] = (result[element['Year']]['Age'] / result[element['Year']]['Count']).toFixed(2);
         }
+        return result;
     }, {});
-
+    return result;
 }
 //Find out all medal winners from India per season - Table
+
+export const medalWonByIndia = (events, Team) => {
+    let dataByTeam = getDataForTeam(events, Team);
+    let result = dataByTeam.reduce((result, element) => {
+        if (result.hasOwnProperty(element['Games']) && element['Medal'] !== 'NA') {
+            if (!result[element['Games']].includes(element['Name'])) {
+                result[element['Games']].push(element['Name']);
+            }
+        }
+        else if (!result.hasOwnProperty(element['Games']) && element['Medal'] !== 'NA') {
+            result[element['Games']] = [];
+            result[element['Games']].push(element['Name'])
+        }
+        return result;
+    }, {});
+    return result;
+}

@@ -1,0 +1,38 @@
+// getData().then(async data => {
+//   let events = data.events;
+//   let noc= data.noc;
+//   console.log(events)
+//   try {
+//     await writeFile(
+//       "./output/noOfTimesHostedCity.json",
+//       noOfTimesHostedCity(events)
+//     );
+
+//     await writeFile(
+//       "./output/medalWonPerCountry.json",
+//       medalWonPerCountry(matches)
+//     );
+
+//     await writeFile(
+//       "./output/participationByGender.json",
+//       participationByGender(matches, deliveries, 2016)
+//     );
+
+//     await writeFile(
+//       "./output/averageAgeBuilder.json",
+//       averageAgeBuilder(matches, deliveries, 2015)
+//     );
+
+//     await writeFile(
+//       "./output/medalWonByIndia.json",
+//       medalWonByIndia(matches, deliveries, 2015)
+//     );
+//     console.log(noOfTimesHostedCity(events));
+//     console.log(medalWonPerCountry(events,2000));
+//     console.log(participationByGender(events));
+//     console.log(averageAgeBuilder(events,"Boxing Men's Heavyweight"));
+//     console.log(medalWonByIndia(events,'India'));
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });

@@ -1,36 +1,22 @@
-import getData from "./conversion";
+import events from '../data/events.json';
+import noc from '../data/noc-regions.json';
+
 import {
-//   getNoOfMatchesPlayed,
-//   getNoOfMatchesWonPerTeamPerYear,
-//   getExtraRunsPerTeamForYear,
-//   getEconomicalBowlersForYear
+noOfTimesHostedCity,
+medalWonPerCountry,
+participationByGender,
+averageAgeBuilder,
+medalWonByIndia
 } from "./olympic";
 import { writeFile } from "./fileio";
 
-getData().then(async data => {
-  let events = data.events;
-  let noc= data.noc;
-  try {
-    await writeFile(
-      "./output/getNoOfMatchesPlayed.json",
-      getNoOfMatchesPlayed(matche)
-    );
-
-    await writeFile(
-      "./output/getNoOfMatchesWonPerTeamPerYear.json",
-      getNoOfMatchesWonPerTeamPerYear(matches)
-    );
-
-    await writeFile(
-      "./output/getExtraRunsPerTeamForYear.json",
-      getExtraRunsPerTeamForYear(matches, deliveries, 2016)
-    );
-
-    await writeFile(
-      "./output/getEconomicalBowlersForYear.json",
-      getEconomicalBowlersForYear(matches, deliveries, 2015)
-    );
-  } catch (error) {
-    console.log(error);
-  }
-});
+const olympicHostedPerCity=noOfTimesHostedCity(events);
+const medalWonbyCountry=medalWonPerCountry(events,2000);
+const participations=participationByGender();
+const averageAge=averageAgeBuilder(events,"Boxing Men's Heavyweight");
+const medalWonIndia=medalWonByIndia(events,'India');
+console.log(olympicHostedPerCity)
+// console.log(medalWonbyCountry)
+// console.log(participations)
+// console.log(averageAge)
+// console.log(medalWonIndia)
