@@ -2,7 +2,7 @@
 
 const getDataForYear = (events, year) => {
     let eventsByYear = events.filter((element) => {
-        if (parseInt(element['Year']) >= year && element['Medal'] !== 'NA') {
+        if (parseInt(element['Year']) > year && element['Medal'] !== 'NA') {
             return element;
         }
     });
@@ -30,44 +30,47 @@ const getDataForTeam = (events, Team) => {
 
 export const noOfTimesHostedCity = (data) => {
     let result = data.reduce((res, event) => {
-        if (res.hasOwnProperty(event['City'])) {
-            if (!res[event['City']].includes(event['Games'])) {
-                res[event['City']].push(event['Games']);
-            }
-        }
-        else {
+        if (!res[event['City']]) {
+            // if (!res[event['City']].includes(event['Games'])) {
+            //     res[event['City']].push(event['Games']);
+            // }
             res[event['City']] = [];
+            res[event['City']].push(event['Games']);
+        }
+        else if(!res[event['City']].includes(event['Games'])){
+            // res[event['City']] = [];
             res[event['City']].push(event['Games']);
         }
         return res;
     }, {});
-    for (let event in result) {
-        result[event] = result[event].length;
-    }
-    return result;
+    let hostedCity = Object.keys(result).reduce((city, element) => {
+        city[element] = result[element].length;
+        return city;
+    }, {});
+    return hostedCity;
 }
 
 // Top 10 countries who have won most medals after 2000 - stacked column - split gold/silver/bronze
 
 export const medalWonPerCountry = (events, year) => {
     let eventsByYear = getDataForYear(events, year);
-    let result = eventsByYear.reduce((result, element) => {
-        if (result.hasOwnProperty(element['NOC'])) {
-            if (result[element['NOC']].hasOwnProperty(element['Medal'])) {
-                result[element['NOC']][element['Medal']]++;
-                result[element['NOC']]['Total']++;
+    let result = eventsByYear.reduce((res, element) => {
+        if (res.hasOwnProperty(element['NOC'])) {
+            if (res[element['NOC']].hasOwnProperty(element['Medal'])) {
+                res[element['NOC']][element['Medal']]++;
+                res[element['NOC']]['Total']++;
             }
             else {
-                result[element['NOC']][element['Medal']] = 1;
-                result[element['NOC']]['Total']++;
+                res[element['NOC']][element['Medal']] = 1;
+                res[element['NOC']]['Total']++;
             }
         }
         else {
-            result[element['NOC']] = {};
-            result[element['NOC']][element['Medal']] = 1;
-            result[element['NOC']]['Total'] = 1;
+            res[element['NOC']] = {};
+            res[element['NOC']][element['Medal']] = 1;
+            res[element['NOC']]['Total'] = 1;
         }
-        return result;
+        return res;
     }, {});
     var arr = Object
         .keys(result)
@@ -82,13 +85,37 @@ export const medalWonPerCountry = (events, year) => {
 }
 
 //M/F participation by decade - column chart
-export const participationByGender = (events) => { }
+export const participationByGender = (events) => {
+    let result = events.reduce((res, element) => {
+        if (res.hasOwnProperty(element['Year'])) {
+            if (res[element['Year']].hasOwnProperty(element['Sex'])) {
+                if (!res[element['Year']][element['Sex']].includes(element['ID'])) {
+                    res[element['Year']][element['Sex']].push(element['ID']);
+                }
+
+            }
+            else {
+                res[element['Year']][element['Sex']] = [];
+                res[element['Year']][element['Sex']].push(element['ID']);
+
+            }
+        }
+        else {
+            res[element['Year']] = {};
+            res[element['Year']][element['Sex']] = [];
+            res[element['Year']][element['Sex']].push(element['ID']);
+
+        }
+        return res;
+    }, {});
+    return result;
+}
 //Per year average age of athletes who participated in Boxing Men’s Heavyweight - Line
 export const averageAgeBuilder = (events, GamesType) => {
     let eventsByGames = getDataForEvent(events, GamesType);
     let result = eventsByGames.reduce((result, element) => {
         if (result.hasOwnProperty(element['Year']) && element['Age'] !== 'NA') {
-            result [element['Year']]['Age'] += parseInt(element['Age']);
+            result[element['Year']]['Age'] += parseInt(element['Age']);
             result[element['Year']]['Count']++;
             result[element['Year']]['Average'] = (result[element['Year']]['Age'] / result[element['Year']]['Count']).toFixed(2);
         }
