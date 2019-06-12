@@ -1,13 +1,4 @@
-//Extracting the Data By Years
 
-const getDataForYear = (events, year) => {
-    let eventsByYear = events.filter((element) => {
-        if (parseInt(element['Year']) > year && element['Medal'] !== 'NA') {
-            return element;
-        }
-    });
-    return eventsByYear;
-}
 //Extracting Boxing Men’s Heavyweight data
 const getDataForEvent = (events, GamesType) => {
     let eventsByGames = events.filter((element) => {
@@ -31,20 +22,16 @@ const getDataForTeam = (events, Team) => {
 export const noOfTimesHostedCity = (data) => {
     let result = data.reduce((res, event) => {
         if (!res[event['City']]) {
-            // if (!res[event['City']].includes(event['Games'])) {
-            //     res[event['City']].push(event['Games']);
-            // }
             res[event['City']] = [];
             res[event['City']].push(event['Games']);
         }
         else if(!res[event['City']].includes(event['Games'])){
-            // res[event['City']] = [];
             res[event['City']].push(event['Games']);
         }
         return res;
     }, {});
-    let hostedCity = Object.keys(result).reduce((city, element) => {
-        city[element] = result[element].length;
+    let hostedCity = Object.entries(result).reduce((city, element) => {
+        city[element[0]] = element[1].length;
         return city;
     }, {});
     return hostedCity;
@@ -52,23 +39,47 @@ export const noOfTimesHostedCity = (data) => {
 
 // Top 10 countries who have won most medals after 2000 - stacked column - split gold/silver/bronze
 
-export const medalWonPerCountry = (events, year) => {
+//Extracting the Data By Years
+const getDataForYear = (events, year) => {
+    let eventsByYear = events.filter((element) => {
+        if (parseInt(element['Year']) > year && element['Medal'] !== 'NA') {
+            return element;
+        }
+    });
+    return eventsByYear;
+}
+//Changing NOC name to Region
+const changeNocToRegion=(result,noc)=>{
+
+let nameMap = noc.reduce((acc, item) => {
+    acc[item['NOC']] = item['region'];
+    return acc;
+  }, {});
+
+  let changedName = Object.keys(result).reduce((acc, item) => {
+    acc[nameMap[item]] = result[item];
+    return acc;
+  }, {});
+
+    return changedName;
+}
+// Question 2nd 
+
+export const medalWonPerCountry = (events,noc, year) => {
     let eventsByYear = getDataForYear(events, year);
     let result = eventsByYear.reduce((res, element) => {
-        if (res.hasOwnProperty(element['NOC'])) {
-            if (res[element['NOC']].hasOwnProperty(element['Medal'])) {
-                res[element['NOC']][element['Medal']]++;
-                res[element['NOC']]['Total']++;
-            }
-            else {
-                res[element['NOC']][element['Medal']] = 1;
-                res[element['NOC']]['Total']++;
-            }
-        }
-        else {
+        if (!res[element['NOC']]){
             res[element['NOC']] = {};
             res[element['NOC']][element['Medal']] = 1;
             res[element['NOC']]['Total'] = 1;
+        }
+        else if(!res[element['NOC']][element['Medal']]) {
+            res[element['NOC']][element['Medal']] = 1;
+            res[element['NOC']]['Total']++;
+        }
+        else{
+            res[element['NOC']][element['Medal']]++;
+            res[element['NOC']]['Total']++;
         }
         return res;
     }, {});
@@ -76,12 +87,11 @@ export const medalWonPerCountry = (events, year) => {
         .keys(result)
         .sort((a, b) => { return result[b]["Total"] - result[a]["Total"]; })
         .slice(0, 10)
-        .map(element => {
-            let temp = {};
-            temp[element] = result[element];
-            return temp;
-        });
-    return arr;
+        .reduce((acc,element) => {
+            acc[element] = result[element];
+            return acc;
+        },{});
+return changeNocToRegion(arr,noc);
 }
 
 //M/F participation by decade - column chart
