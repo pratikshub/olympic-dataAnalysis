@@ -17,7 +17,6 @@ export const noOfTimesHostedCity = (data) => {
     }, {});
     return hostedCity;
 }
-
 // Top 10 countries who have won most medals after 2000 - stacked column - split gold/silver/bronze
 
 //Extracting the Data By Years
