@@ -141,11 +141,7 @@ export const averageAgeBuilder = (events, GamesType) => {
         }
         return result;
     }, {});
-    let averageAge = Object.keys(result).reduce((acc, year) => {
-        acc[year] = (result[year]['Age'] / result[year]['Count']).toFixed(2);
-        return acc;
-    }, {})
-    return averageAge;
+    return mapValues(result,function(val){ return (val['Age']/val['Count']).toFixed(2);})
 }
 //Find out all medal winners from India per season - Table
 
@@ -162,14 +158,13 @@ const getDataForTeam = (events, Team) => {
 export const medalWonByIndia = (events, Team) => {
     let dataByTeam = getDataForTeam(events, Team);
     let medalIndiaWon = dataByTeam.reduce((result, element) => {
-        if (result.hasOwnProperty(element['Year']) && element['Medal'] !== 'NA') {
-            if (!result[element['Year']].includes(element['Name'])) {
-                result[element['Year']].push(element['Name']);
-            }
+        if (!result.hasOwnProperty(element['Year']) && element['Medal'] !== 'NA') {
+            let temp=new Set();
+            result[element['Year']]=temp;
+            result[element['Year']].add(element['Name'])
         }
-        else if (!result.hasOwnProperty(element['Games']) && element['Medal'] !== 'NA') {
-            result[element['Games']] = [];
-            result[element['Games']].push(element['Name'])
+        else if (result[element['Year']]&& element['Medal'] !== 'NA') {
+            result[element['Year']].add(element['Name']);
         }
         return result;
     }, {});
