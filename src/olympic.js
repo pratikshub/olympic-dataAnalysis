@@ -1,21 +1,26 @@
+
+function mapValues(data, fun) {
+    let result = Object.keys(data).reduce((acc, values) => {
+        acc[values] = fun(data[values]);
+        return acc;
+    }, {});
+    return result;
+}
 // Number of times olympics hosted per City over the years - Pie chart
 
 export const noOfTimesHostedCity = (data) => {
     let result = data.reduce((res, event) => {
         if (!res[event['City']]) {
-            res[event['City']] = [];
-            res[event['City']].push(event['Games']);
+            let temp = new Set();
+            res[event['City']] = temp;
+            res[event['City']].add(event['Games']);
         }
-        else if (!res[event['City']].includes(event['Games'])) {
-            res[event['City']].push(event['Games']);
+        else {
+            res[event['City']].add(event['Games']);
         }
         return res;
     }, {});
-    let hostedCity = Object.entries(result).reduce((city, element) => {
-        city[element[0]] = element[1].length;
-        return city;
-    }, {});
-    return hostedCity;
+    return mapValues(result, function (element) { return element.size });
 }
 // Top 10 countries who have won most medals after 2000 - stacked column - split gold/silver/bronze
 
@@ -80,7 +85,7 @@ const participationByDecade = (result) => {
     let participationByGender = Object.keys(result).reduce((acc, year) => {
         let decade = `${year.substring(0, 3)}0-${year.substring(0, 3)}9`;
         if (!acc[decade]) {
-            acc[decade]={};
+            acc[decade] = {};
             acc[decade]['M'] = result[year]['M'];
             acc[decade]['F'] = result[year]['F'];
         }
@@ -110,6 +115,7 @@ export const participationByGender = (events) => {
     }, {});
 
     return participationByDecade(result);
+    // return result;
 }
 //Per year average age of athletes who participated in Boxing Men’s Heavyweight - Line
 
@@ -135,10 +141,10 @@ export const averageAgeBuilder = (events, GamesType) => {
         }
         return result;
     }, {});
-    let averageAge=Object.keys(result).reduce((acc,year)=>{
-        acc[year]=(result[year]['Age']/result[year]['Count']).toFixed(2);
+    let averageAge = Object.keys(result).reduce((acc, year) => {
+        acc[year] = (result[year]['Age'] / result[year]['Count']).toFixed(2);
         return acc;
-    },{})
+    }, {})
     return averageAge;
 }
 //Find out all medal winners from India per season - Table
@@ -156,9 +162,9 @@ const getDataForTeam = (events, Team) => {
 export const medalWonByIndia = (events, Team) => {
     let dataByTeam = getDataForTeam(events, Team);
     let medalIndiaWon = dataByTeam.reduce((result, element) => {
-        if (result.hasOwnProperty(element['Games']) && element['Medal'] !== 'NA') {
-            if (!result[element['Games']].includes(element['Name'])) {
-                result[element['Games']].push(element['Name']);
+        if (result.hasOwnProperty(element['Year']) && element['Medal'] !== 'NA') {
+            if (!result[element['Year']].includes(element['Name'])) {
+                result[element['Year']].push(element['Name']);
             }
         }
         else if (!result.hasOwnProperty(element['Games']) && element['Medal'] !== 'NA') {
