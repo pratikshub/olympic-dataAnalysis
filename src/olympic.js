@@ -1,4 +1,3 @@
-
 function mapValues(data, fun) {
     let result = Object.keys(data).reduce((acc, values) => {
         acc[values] = fun(data[values]);
@@ -7,7 +6,6 @@ function mapValues(data, fun) {
     return result;
 }
 // Number of times olympics hosted per City over the years - Pie chart
-
 export const noOfTimesHostedCity = (data) => {
     let result = data.reduce((res, event) => {
         if (!res[event['City']]) {
@@ -23,7 +21,6 @@ export const noOfTimesHostedCity = (data) => {
     return mapValues(result, function (element) { return element.size });
 }
 // Top 10 countries who have won most medals after 2000 - stacked column - split gold/silver/bronze
-
 //Extracting the Data By Years
 const getDataForYear = (events, year) => {
     let eventsByYear = events.filter((element) => {
@@ -48,6 +45,16 @@ const changeNocToRegion = (result, noc) => {
 
     return changedName;
 }
+//Sorting
+const sortedCountriesMedal = (data) => {
+    var arr = Object.entries(data)
+        .sort((a, b) => { return b[1]['Total'] - a[1]['Total'] })
+        .slice(0, 10).reduce((acc, element) => {
+            acc[element[0]] = element[1];
+            return acc;
+        }, {});
+    return arr;
+}
 // Question 2nd 
 
 export const medalWonPerCountry = (events, noc, year) => {
@@ -68,15 +75,8 @@ export const medalWonPerCountry = (events, noc, year) => {
         }
         return res;
     }, {});
-    var arr = Object
-        .keys(result)
-        .sort((a, b) => { return result[b]["Total"] - result[a]["Total"]; })
-        .slice(0, 10)
-        .reduce((acc, element) => {
-            acc[element] = result[element];
-            return acc;
-        }, {});
-    return changeNocToRegion(arr, noc);
+
+    return changeNocToRegion(sortedCountriesMedal(result), noc);
 }
 
 //M/F participation by decade - column chart
