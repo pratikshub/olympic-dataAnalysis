@@ -115,7 +115,6 @@ export const participationByGender = (events) => {
     }, {});
 
     return participationByDecade(result);
-    // return result;
 }
 //Per year average age of athletes who participated in Boxing Men’s Heavyweight - Line
 
@@ -168,5 +167,5 @@ export const medalWonByIndia = (events, Team) => {
         }
         return result;
     }, {});
-    return medalIndiaWon;
+    return mapValues(medalIndiaWon,function setToArray(val){return Array.from(val);});
 }

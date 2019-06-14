@@ -22,24 +22,27 @@ const writeEachFile = (path, jsonObject) => {
       }
    })
 }
+async function getOutput(){
+   try{
+      await writeEachFile('./output/olympicsHostedPerCity.json', 
+            stringify(noOfTimesHostedCity(events)));
 
-const olympicHostedPerCity = noOfTimesHostedCity(events);
-const jsonObjectHosting = stringify(olympicHostedPerCity);
-writeEachFile('./output/olympicsHostedPerCity.json', jsonObjectHosting);
+      await writeEachFile('./output/olympicsTopMedalWon.json', 
+            stringify(medalWonPerCountry(events, noc, 2000)));
 
-const medalWonbyCountry = medalWonPerCountry(events, noc, 2000);
-const jsonObjectMedalWon = stringify(medalWonbyCountry);
-writeEachFile('./output/olympicsTopMedalWon.json', jsonObjectMedalWon);
+      await writeEachFile('./output/olympicsParticipationByGender.json', 
+            stringify(participationByGender(events)));
+   
+      await writeEachFile('./output/olympicsAverageAgeYear.json', 
+            stringify(averageAgeBuilder(events, "Boxing Men's Heavyweight")));
 
-const participations = participationByGender(events);
-const jsonObjectparticipation = stringify(participations);
-writeEachFile('./output/olympicsParticipationByGender.json', jsonObjectparticipation);
+      await writeEachFile('./output/olympicsMeadalWonIndia.json',
+            stringify(medalWonByIndia(events, 'India')));
 
-const averageAge = averageAgeBuilder(events, "Boxing Men's Heavyweight");
-const jsonObjectAvgAge = stringify(averageAge);
-writeEachFile('./output/olympicsAverageAgeYear.json', jsonObjectAvgAge);
 
-const medalWonIndia = medalWonByIndia(events, 'India');
-const jsonObjectmedalWonIndia = stringify(medalWonIndia);
-console.log(medalWonIndia)
-writeEachFile('./output/olympicsMeadalWonIndia.json', jsonObjectmedalWonIndia);
+   }
+   catch (error) {
+      console.log(error);
+    }
+}
+getOutput();
