@@ -1,6 +1,4 @@
-import events from '../data/events.json';
-import noc from '../data/noc-regions.json';
-
+import getData from './conversion';
 import {
    noOfTimesHostedCity,
    medalWonPerCountry,
@@ -22,7 +20,9 @@ const writeEachFile = (path, jsonObject) => {
       }
    })
 }
-async function getOutput(){
+getData().then(async data=>{
+let events=data.events;
+let noc=data.noc;
    try{
       await writeEachFile('./output/olympicsHostedPerCity.json', 
             stringify(noOfTimesHostedCity(events)));
@@ -39,10 +39,11 @@ async function getOutput(){
       await writeEachFile('./output/olympicsMeadalWonIndia.json',
             stringify(medalWonByIndia(events, 'India')));
 
-
    }
    catch (error) {
       console.log(error);
     }
 }
-getOutput();
+);
+
+
